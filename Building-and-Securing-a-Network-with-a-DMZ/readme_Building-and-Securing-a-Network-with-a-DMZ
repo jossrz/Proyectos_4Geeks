@@ -104,10 +104,8 @@ ip access-group 102 in
 
 > ¿Qué aprendiste con este ejercicio? ¿Qué mejorarías?
 
-**Ejemplo:**
-Aprendí a aplicar NAT y ACLs en un entorno simulado. Recomiendo verificar conectividad básica antes de aplicar reglas de firewall, ya que un error en la IP puede bloquear todo.
+La Importancia de enterder el Concepto de la Zona DMZ y el Control de Acceso a los Servidores.
 
 
 ### 7. Capturas de evidencia
 
-> Adjunta aquí (o en un PDF anexo) las capturas solicitadas: pings, navegador, comandos `show`, etc.
