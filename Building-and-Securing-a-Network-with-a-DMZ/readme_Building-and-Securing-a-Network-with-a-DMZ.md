@@ -108,4 +108,18 @@ La Importancia de enterder el Concepto de la Zona DMZ y el Control de Acceso a l
 
 
 ### 7. Capturas de evidencia
+Ping desde Computador en la Red Interna hacia la ip privada del servidor
 ![alt text](https://raw.githubusercontent.com/jossrz/Proyectos_4Geeks/8af25c6654979beeb19027a942f06546318aa92a/Building-and-Securing-a-Network-with-a-DMZ/Captura1.PNG "Camptura 1")
+
+Acceso Web desde la Red Interna hacia la ip privada del servidor
+![alt text](https://raw.githubusercontent.com/jossrz/Proyectos_4Geeks/8af25c6654979beeb19027a942f06546318aa92a/Building-and-Securing-a-Network-with-a-DMZ/Captura2.PNG "Camptura 2")
+
+Ping desde la Red Externa (bloqueada) hacia la ip privada del servidor
+![alt text](https://raw.githubusercontent.com/jossrz/Proyectos_4Geeks/8af25c6654979beeb19027a942f06546318aa92a/Building-and-Securing-a-Network-with-a-DMZ/Captura3.PNG "Camptura 3")
+
+Acceso web a la Ip Nateada hacia el servidor
+![alt text](https://raw.githubusercontent.com/jossrz/Proyectos_4Geeks/8af25c6654979beeb19027a942f06546318aa92a/Building-and-Securing-a-Network-with-a-DMZ/Captura4.PNG "Camptura 4")
+
+No hay Acceso web a la Ip directa del servidor
+![alt text](https://raw.githubusercontent.com/jossrz/Proyectos_4Geeks/8af25c6654979beeb19027a942f06546318aa92a/Building-and-Securing-a-Network-with-a-DMZ/Captura5.PNG "Camptura 5")
+
