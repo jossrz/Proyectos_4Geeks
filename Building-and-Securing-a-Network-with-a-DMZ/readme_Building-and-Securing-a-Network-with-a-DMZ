@@ -1,0 +1,113 @@
+
+# Informe de configuración de DMZ con Cisco Packet Tracer
+
+
+### 1. Objetivo del laboratorio
+
+> Explica brevemente qué se buscaba lograr con este laboratorio.
+
+Se configuro una Red LAN y una RED DMZ, y una RED Externa para Simular el acceso desde internet.
+Se configuro una Regla NAT para dar acceso a la red DMZ desde una ip de la Interfaz externa (GigabitEthernet0/2).
+Se Configuro unas Reglas de acceso para limitar el trafico a solo trafico Web, puerto 80, entre la red Externa y la red DMZ
+---
+
+### 2. Topología implementada
+
+> Describe la red. Puedes incluir una imagen si el software lo permite (captura de Packet Tracer).
+
+- Cantidad de redes: 3
+- Dispositivos usados: 4
+- Breve descripción de la función de cada zona (LAN, DMZ, Externa).
+LAN: Red Interna de la Organizacion
+DMZ: RED con servidores que tienen acceso externo controlado
+EXTERNA: RED Fuera del control de la Organizacion simula el acceso a internet
+
+
+### 3. Plan de direccionamiento IP
+
+Completa la tabla con las IPs asignadas (puedes copiarla del enunciado si no cambió).
+
+| Dispositivo             | IP             	 | Máscara           | Gateway           |
+|-------------------------|------------------|-------------------|-------------------|
+| PC_Internal             | 192.168.1.10  	 | 255.255.255.0 	 | 192.168.1.1   	 |
+| Server_DMZ              | 192.168.2.10     | 255.255.255.0     | 192.168.2.1       |
+| PC_External             | 192.168.3.10     | 255.255.255.0     | 192.168.3.1       |
+| Router_FW Gi0/0 (LAN)   | 192.168.1.1      | 255.255.255.0     |                   |
+| Router_FW Gi0/1 (DMZ)   | 192.168.2.1      | 255.255.255.0     |                   |
+| Router_FW Gi0/2 (Ext)   | 192.168.3.1      | 255.255.255.0     |                   |
+
+
+### 4. Configuración aplicada (resumen)
+
+> Resume los comandos o pasos más relevantes que ejecutaste. Usa texto + fragmentos de código cuando sea necesario.
+
+- Interfaces configuradas con `ip address`
+
+Router_FW(config)# interface GigabitEthernet0/0
+Router_FW(config-if)# ip address 192.168.1.1 255.255.255.0
+Router_FW(config-if)# no shutdown
+Router_FW(config-if)# exit
+
+Router_FW(config)# interface GigabitEthernet0/1
+Router_FW(config-if)# ip address 192.168.2.1 255.255.255.0
+Router_FW(config-if)# no shutdown
+Router_FW(config-if)# exit
+
+Router_FW(config)# interface GigabitEthernet0/2
+Router_FW(config-if)# ip address 192.168.3.1 255.255.255.0
+Router_FW(config-if)# no shutdown
+Router_FW(config-if)# exit
+
+
+- NAT:
+
+Router_FW# configure terminal
+Router_FW(config)# interface GigabitEthernet0/1
+Router_FW(config-if)# ip nat inside  ! La interfaz DMZ es 'inside' para el NAT
+Router_FW(config-if)# exit
+
+
+Router_FW(config)# interface GigabitEthernet0/2
+Router_FW(config-if)# ip nat outside ! La interfaz externa es 'outside' para el NAT
+Router_FW(config-if)# exit
+
+Router_FW(config)# ip nat inside source static 192.168.2.10 192.168.3.1
+Router_FW(config)# end
+Router_FW# write memory
+
+
+- ACLs:
+
+access-list 101 permit tcp any host 192.168.3.1 eq 80
+access-list 101 deny ip any any
+
+access-list 102 deny ip 192.168.2.0 0.0.0.255 192.168.1.0 0.0.0.255 
+access-list 102 permit ip any any
+
+access-list 102 permit tcp 192.168.2.0 0.0.0.255 192.168.1.0 0.0.0.255 eq 80
+access-list 102 permit icmp 192.168.2.0 0.0.0.255 192.168.1.0 0.0.0.255
+
+interface GigabitEthernet0/1
+ip access-group 101 in
+ip access-group 102 in
+
+### 5. Verificaciones realizadas
+
+> Describe las pruebas y su resultado. Incluye capturas o salidas de comandos si se puede.
+
+- `ping` desde PC_Internal al router: ✅
+- Acceso web desde PC_External: ✅
+- Bloqueo de acceso desde DMZ a LAN: ✅
+
+
+### 6. Conclusiones y recomendaciones
+
+> ¿Qué aprendiste con este ejercicio? ¿Qué mejorarías?
+
+**Ejemplo:**
+Aprendí a aplicar NAT y ACLs en un entorno simulado. Recomiendo verificar conectividad básica antes de aplicar reglas de firewall, ya que un error en la IP puede bloquear todo.
+
+
+### 7. Capturas de evidencia
+
+> Adjunta aquí (o en un PDF anexo) las capturas solicitadas: pings, navegador, comandos `show`, etc.
