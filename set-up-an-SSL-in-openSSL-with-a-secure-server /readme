@@ -1,1 +1,128 @@
+2026-02-02-set-up-an-SSL-in-openSSL-with-a-secure-server 
+
+Open a terminal and run the following command to generate a 2048-bit RSA private key:
+openssl genrsa -out /etc/ssl/private/myserver.key 2048
+
+
+Verify that the file was created:
+ls -l /etc/ssl/private/myserver.key
+Expected result:
+-rw------- 1 root root 1675 Jun  4 18:30 /etc/ssl/private/myserver.key
+
+
+Use the following command to generate a CSR that will contain the public information to be included in the certificate:
+openssl req -new -key /etc/ssl/private/myserver.key -out /etc/ssl/certs/myserver.csr
+
+During the process, you will be prompted to enter information about your organization. (Here is an example of how you can complete it):
+Country Name (2 letter code): ES
+State or Province Name (full name): Barcelona
+Locality Name (eg, city): Barcelona
+Organization Name (eg, company): Yotta-tech
+Organizational Unit Name (eg, section): IT
+Common Name (eg, fully qualified host name): yotta-tech.com
+Email Address: admin@yotta-tech.com
+
+
+For the purposes of this practice, we will sign the CSR with our own private key to obtain a self-signed certificate, use the following command (This will generate a self-signed certificate valid for 365 days):
+openssl x509 -req -days 365 -in /etc/ssl/certs/myserver.csr -signkey /etc/ssl/private/myserver.key -out /etc/ssl/certs/myserver.crt
+
+x509: Generates a certificate in standard X.509 format.
+-req: Indicates that the input file is a CSR request.
+-days 365: The certificate will be valid for 365 days.
+-in /etc/ssl/certs/myserver.csr: CSR file that we will sign.
+-signkey /etc/ssl/private/myserver.key: Private key used to sign the CSR.
+-out /etc/ssl/certs/myserver.crt: Name of the resulting file (the final certificate).
+
+
+
+Check the SSL configuration file for Apache:
+sudo nano /etc/apache2/sites-available/default-ssl.conf
+
+
+
+
+Make sure the file contains the following:
+  <IfModule mod_ssl.c>
+      <VirtualHost _default_:443>
+          ServerAdmin admin@my-domain.com
+          ServerName my-domain.com
+
+          DocumentRoot /var/www/html
+
+          SSLEngine on
+          SSLCertificateFile /etc/ssl/certs/myserver.crt
+          SSLCertificateKeyFile /etc/ssl/private/myserver.key
+
+          <FilesMatch "\.(cgi|shtml|phtml|php)$">
+              SSLOptions +StdEnvVars
+          </FilesMatch>
+          <Directory /usr/lib/cgi-bin>
+              SSLOptions +StdEnvVars
+          </Directory>
+
+          BrowserMatch "MSIE [2-6]" \
+              nokeepalive ssl-unclean-shutdown \
+              downgrade-1.0 force-response-1.0
+
+          BrowserMatch "MSIE [17-9]" ssl-unclean-shutdown
+
+      </VirtualHost>
+  </IfModule>
+Ensure that:
+The ServerName matches the Common Name (CN) of the self-signed certificate.
+SSLEngine on: The SSL engine for this site is enabled to on.
+SSLCertificateFile: Path to the .crt file (the public certificate)
+SSLCertificateKeyFile: Path to the .key file (the private key associated with the certificate).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Use the following commands to enable the SSL module and load the HTTPS site configuration:
+sudo a2enmod ssl
+sudo a2ensite default-ssl
+sudo systemctl reload apache2
+
+
+Check the /etc/hosts file on your local machine (from where you access the virtual machine) to ensure that my-domain.com resolves to 127.0.0.1
+sudo nano /etc/hosts
+
+
+
+
+
+
+
+
+
+
+
+
+Open a web browser and enter the URL https://my-domain.com. You should see a security warning due to the self-signed certificate. Accept the risk and continue to see the default Apache page served over HTTPS.
+
+
+
+In the ./assets folder, you will find the script check_ssl.sh that you should copy and paste onto the desktop of your Debian virtual machine.
+
+
+Once you have pasted the script check_ssl.sh on your Debian machine, open the terminal and navigate to the directory where the script is located, in our case ./Desktop, and make the script executable (if it is not already). This can be done using the chmod command:
+chmod +x check_ssl.sh
+
+Run the script specifying its name. You may also provide any necessary arguments. Assuming no additional arguments are needed for this example, you should run:
+./check_ssl.sh
+
+
+
+Upload your results. Running the script will create a report.json file that you should copy and paste into the root of this project.
+
+
 
